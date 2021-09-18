@@ -11,6 +11,7 @@ import Signup from './Components/Signup';
 import Forgotpage from './Components/Forgotpage';
 import { useState } from 'react';
 import Forgotpageresetpassword from './Components/Forgotpageresetpassword';
+import Mainpage from './Components/Mainpage';
 
 function App() {
   const [loggedin, setLoggedIn] = useState(false);
@@ -32,6 +33,9 @@ function App() {
         </Route>
         <Route path="/reset-password" exact>
           <Forgotpageresetpassword />
+        </Route>
+        <Route path="/mainpage" exact>
+          <Mainpage />
         </Route>
         <Route path="/" exact>
           <Homepage />

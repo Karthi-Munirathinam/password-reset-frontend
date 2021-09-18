@@ -35,7 +35,7 @@ function Login({ handleLog }) {
                     });
                     window.localStorage.setItem("app-token", token.data.token);
                     handleLog();
-                    history.push('/');
+                    history.push('/mainpage');
                 } catch (error) {
                     setLoginError(true)
                     console.log(error)
