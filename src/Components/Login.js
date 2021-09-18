@@ -73,7 +73,7 @@ function Login({ handleLog }) {
                             ) : null
                         }
                         <div className="row fp-content p-3">
-                            <div className="col-12 text-center "><Link to='/login/forgotpassword' className="fp-text">Forgot your password?</Link></div>
+                            <div className="col-12 text-center "><Link to='/forgotpassword' className="fp-text">Forgot your password?</Link></div>
                         </div>
                         <div className="row p-2">
                             <div className="col-12 sign-in-btn-container">

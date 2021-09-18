@@ -5,9 +5,6 @@
 /.pnp
 .pnp.js
 
-#component
-/src/components/Forgotpageresetpassword.js
-
 # testing
 /coverage
 

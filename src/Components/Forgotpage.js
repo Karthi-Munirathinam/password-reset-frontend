@@ -2,14 +2,14 @@ import React from 'react';
 import './forgotpage.css';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
+import axios from './Connection';
+import { Link } from 'react-router-dom';
 
 function Forgotpage() {
 
     const [fpsubmit, setFpsubmit] = useState(false);
-    const [forgotpasswordlink, setforgotPasswordlink] = useState(true);
-    const history = useHistory();
+    const [userexists, setUserExists] = useState(true);
     const formikemail = useFormik({
         initialValues: {
             email: ''
@@ -24,32 +24,24 @@ function Forgotpage() {
             return errors;
         },
         onSubmit: (values) => {
-            setFpsubmit(true);
-            console.log(values);
+            const forgotPasswordSubmit = async () => {
+                try {
+                    let data = await axios.post('/forgotpassword', {
+                        email: values.email
+                    });
+                    if (!data.data.exists) {
+                        setUserExists(false);
+                    } else if (data.data.exists) {
+                        setFpsubmit(true);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            forgotPasswordSubmit()
         }
     })
-    const formik = useFormik({
-        initialValues: {
-            password: '',
-            confirmpassword: ''
-        },
-        validate: (values) => {
-            let errors = {};
-            if (!values.password) {
-                errors.password = "Password required"
-            } else if (values.password.length < 8) {
-                errors.password = "Password must contain atleast 8 characters"
-            }
-            if (values.password !== values.confirmpassword) {
-                errors.confirmpassword = "Password/Confirm password doesnot match"
-            }
-            return errors;
-        },
-        onSubmit: (values) => {
-            console.log(values);
-            history.push('/login')
-        }
-    })
+
     return (
         <motion.div
             key="login"
@@ -63,47 +55,34 @@ function Forgotpage() {
             className="container-lg mt-4">
             <div className="row fp-container">
                 <div className="fp-form-container col-12">
-                    {
-                        forgotpasswordlink ? (
-                            <form onSubmit={formik.handleSubmit} method="post">
-                                <h2 className="text-center mb-3">Reset Password</h2>
-                                <div className="text-center">
-                                    <div>
-                                        <input type="password" name="password" value={formik.values.password} onChange={formik.handleChange} className="fp-password-input col-8" placeholder="password" />
-                                        {formik.errors.password ? <div className="fp-errors col-12">{formik.errors.password}</div> : null}
+                    <form onSubmit={formikemail.handleSubmit} method="post">
+                        <h2 className="text-center mb-3">Forgot Password ?</h2>
+                        <h5 className="text-center mb-4">Enter your registered email to reset the password</h5>
+                        <div>
+                            <input type="email" name="email" value={formikemail.values.email} onChange={formikemail.handleChange} className="fp-email-input col-12" placeholder="email" />
+                            {formikemail.errors.email ? <div className="fp-errors col-12">{formikemail.errors.email}</div> : null}
+                        </div>
+                        {
+                            fpsubmit ?
+                                (
+                                    <div className="text-center font-weight-light" style={{ fontSize: "0.8rem" }}>
+                                        <h3>Check your mail for password reset link.</h3>
                                     </div>
-                                    <div>
-                                        <input type="password" name="confirmpassword" value={formik.values.confirmpassword} onChange={formik.handleChange} className="fp-password-input" placeholder="confirm password" />
-                                        {formik.errors.confirmpassword ? <div className="fp-errors col-12">{formik.errors.confirmpassword}</div> : null}
-                                    </div>
-                                </div>
-                                <div className="col-12 text-center mt-4">
-                                    <input type="submit" value="Submit" className="btn fp-submit-btn" />
-                                </div>
-                            </form>
-                        ) : (
-                            <form onSubmit={formikemail.handleSubmit} method="post">
-                                <h2 className="text-center mb-3">Forgot Password ?</h2>
-                                <h5 className="text-center mb-4">Enter your registered email to reset the password</h5>
-                                <div>
-                                    <input type="email" name="email" value={formikemail.values.email} onChange={formikemail.handleChange} className="fp-email-input col-12" placeholder="email" />
-                                    {formikemail.errors.email ? <div className="fp-errors col-12">{formikemail.errors.email}</div> : null}
-                                </div>
-                                <div className="col-12 text-center mt-4">
-                                    <input type="submit" value="Reset password" className="btn fp-submit-btn" />
-                                </div>
-                            </form>
-                        )
-                    }
-                    {
-                        fpsubmit ?
-                            (
+                                )
+                                : null
+                        }
+                        {
+                            userexists ? null : (
                                 <div className="text-center font-weight-light">
-                                    <h3>A unique link to reset your password has been sent to your email. To reset your password, click the following link and follow the instructions.</h3>
+                                    <h3>User doesn't exist, please <Link to="/register" className="text-decoration-none">register</Link></h3>
                                 </div>
                             )
-                            : null
-                    }
+                        }
+                        <div className="col-12 text-center mt-4">
+                            <input type="submit" value="Reset password" className="btn fp-submit-btn" />
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </motion.div>
