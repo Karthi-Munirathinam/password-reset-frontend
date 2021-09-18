@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Register.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useHistory } from 'react-router-dom';
+import axios from './Connection';
 
 function Signup() {
-
+    const [userexist, setuserexist] = useState(false);
     const history = useHistory();
     const formik = useFormik({
         initialValues: {
@@ -42,8 +43,25 @@ function Signup() {
             return errors;
         },
         onSubmit: (values) => {
-            console.log(values);
-            history.push('/login')
+            const postdata = async () => {
+                try {
+                    let user = await axios.post('/register', {
+                        firstName: values.firstname,
+                        lastName: values.lastname,
+                        email: values.email.toLowerCase(),
+                        password: values.password
+                    });
+
+                    if (user.data.userexists) {
+                        setuserexist(true);
+                    } else {
+                        history.push('/login')
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+            postdata();
         }
     })
 
@@ -96,6 +114,9 @@ function Signup() {
                                     {formik.errors.password ? <div className="errors col-12">{formik.errors.password}</div> : null}
                                     {formik.errors.confirmpassword ? <div className="errors col-12">{formik.errors.confirmpassword}</div> : null}
                                 </div>
+                                {userexist ? (<div>
+                                    <div className="text-center mt-1" style={{ color: "crimson" }}>user already exists. try <Link to="/login" style={{ textDecoration: "none" }}>Login</Link></div>
+                                </div>) : null}
                             </div>
                             <div className="row p-2">
                                 <div className="col-12 sign-in-btn-container">

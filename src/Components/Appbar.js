@@ -10,6 +10,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Button from '@material-ui/core/Button';
 import { Link } from "react-router-dom";
 import '../App.css';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -31,18 +32,24 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     link: {
-        textDecoration: "none"
+        textDecoration: "none",
+        color: "white"
     },
 }));
 
-function Appbar() {
+function Appbar({ loggedIn, setlogin }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+    const history = useHistory();
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+    const handleLogOut = () => {
+        window.localStorage.removeItem("app-token");
+        setlogin(false);
+        history.push('/')
+    }
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
     };
@@ -83,21 +90,32 @@ function Appbar() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <Link to="/login" className={`${classes.link} link`}>
-                    <Button variant="contained" color="secondary" className="btn" style={{ marginRight: "0.5rem" }}>
-                        Login
-                    </Button>
-                </Link>
-            </MenuItem>
-            <MenuItem>
-                <Link to="/register" className={`${classes.link} link`}>
-                    <Button variant="contained" className="btn" color="secondary">
-                        Sign up
-                    </Button>
-                </Link>
-            </MenuItem>
-
+            {
+                loggedIn ? (
+                    <MenuItem>
+                        <Button variant="contained" color="secondary" onClick={handleLogOut}>
+                            Logout
+                        </Button>
+                    </MenuItem>
+                ) : (
+                    <span>
+                        <MenuItem>
+                            <Link to="/login" className={`${classes.link} text-decoration-none`}>
+                                <Button variant="contained" color="secondary" style={{ marginRight: "0.5rem" }}>
+                                    Login
+                                </Button>
+                            </Link>
+                        </MenuItem>
+                        <MenuItem>
+                            <Link to="/register" className={`${classes.link} text-decoration-none`}>
+                                <Button variant="contained" color="secondary">
+                                    Sign up
+                                </Button>
+                            </Link>
+                        </MenuItem>
+                    </span>
+                )
+            }
         </Menu>
     );
     return (
@@ -111,16 +129,30 @@ function Appbar() {
                     </Link>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop} >
-                        <Link to="/login" className={`${classes.link}  text-decoration-none`}>
-                            <Button variant="contained" color="secondary" style={{ marginRight: "0.5rem" }}>
-                                Login
-                            </Button>
-                        </Link>
-                        <Link to="/register" className={`${classes.link}  text-decoration-none`} style={{ marginRight: "0.5rem" }}>
-                            <Button variant="contained" color="secondary">
-                                Sign up
-                            </Button>
-                        </Link>
+                        {
+                            loggedIn ? (
+                                <Button variant="contained" color="secondary" onClick={handleLogOut}>
+                                    Logout
+                                </Button>
+                            ) : (
+                                <span>
+                                    <Link to="/login" className={`${classes.link}  text-decoration-none`}>
+                                        <Button variant="contained" color="secondary" style={{ marginRight: "0.5rem" }}>
+                                            Login
+                                        </Button>
+                                    </Link>
+                                    <Link to="/register" className={`${classes.link}  text-decoration-none`} style={{ marginRight: "0.5rem" }}>
+                                        <Button variant="contained" color="secondary">
+                                            Sign up
+                                        </Button>
+                                    </Link>
+                                </span>
+                            )
+                        }
+
+
+
+
 
                     </div>
                     <div className={classes.sectionMobile}>

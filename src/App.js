@@ -9,14 +9,19 @@ import {
 import Login from './Components/Login';
 import Signup from './Components/Signup';
 import Forgotpage from './Components/Forgotpage';
+import { useState } from 'react';
 
 function App() {
+  const [loggedin, setLoggedIn] = useState(false);
+  const handleLoggedIn = () => {
+    setLoggedIn(true)
+  }
   return (
     <Router>
-      <Appbar />
+      <Appbar loggedIn={loggedin} setlogin={setLoggedIn} />
       <Switch>
         <Route path="/login" exact>
-          <Login />
+          <Login handleLog={handleLoggedIn} />
         </Route>
         <Route path="/register" exact>
           <Signup />

@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './login.css';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useHistory } from 'react-router-dom';
-
-function Login() {
+import axios from './Connection';
+function Login({ handleLog }) {
+    const [loginError, setLoginError] = useState(false);
 
     const history = useHistory();
     const formik = useFormik({
@@ -26,8 +27,21 @@ function Login() {
             return errors;
         },
         onSubmit: (values) => {
-            console.log(values.username, values.password)
-            history.push('/');
+            const login = async () => {
+                try {
+                    let token = await axios.post('/login', {
+                        email: values.username,
+                        password: values.password
+                    });
+                    window.localStorage.setItem("app-token", token.data.token);
+                    handleLog();
+                    history.push('/');
+                } catch (error) {
+                    setLoginError(true)
+                    console.log(error)
+                }
+            }
+            login()
         }
     })
     return (
@@ -53,6 +67,11 @@ function Login() {
                             <input type="password" name="password" value={formik.values.password} onChange={formik.handleChange} className="password-input col-12" placeholder="Password" />
                             {formik.errors.password ? <div className="errors col-12">{formik.errors.password}</div> : null}
                         </div>
+                        {
+                            loginError ? (
+                                <div className="text-center mt-1 mb-1" style={{ color: "crimson", fontSize: "0.8rem" }}>Username/Password doesnot match</div>
+                            ) : null
+                        }
                         <div className="row fp-content p-3">
                             <div className="col-12 text-center "><Link to='/login/forgotpassword' className="fp-text">Forgot your password?</Link></div>
                         </div>
